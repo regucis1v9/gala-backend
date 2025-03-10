@@ -26,7 +26,7 @@ class ScreenController extends Controller
         return response()->json([
             'message' => 'Screen created successfully',
             'screen' => $newScreen,
-        ]);
+        ],201);
     }
     
     public function getAllScreens()
@@ -38,16 +38,17 @@ class ScreenController extends Controller
     public function deleteScreen(Request $request)
     {
         $id = $request->input('id');
+
         $screen = Screen::find($id);
         if ($screen) {
             $screen->delete();
 
             return response()->json([
-                'message' => 'Screen deleted successfully',
-            ]);
+                'message' => 'Ekrāns veiskmīgi izdēsts ',
+            ],200);
         } else {
             return response()->json([
-                'message' => 'Screen not found',
+                'message' => 'Ekrāns nav atrasts',
             ], 404);
         }
     }

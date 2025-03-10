@@ -9,5 +9,11 @@
         "axios": "^1.7.4",
         "laravel-vite-plugin": "^1.0",
         "vite": "^5.0"
+    },
+    "dependencies": {
+        "@mantine/carousel": "^7.13.3",
+        "@mantine/core": "^7.13.3",
+        "@mantine/hooks": "^7.13.3",
+        "embla-carousel-react": "^7.1.0"
     }
 }

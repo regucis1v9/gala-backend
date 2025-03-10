@@ -5,29 +5,21 @@ namespace App\Http\Controllers;
 use App\Models\Slide;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Carbon; // Use Carbon for date handling
+use Illuminate\Support\Carbon; 
 
 class SlideController extends Controller
 {
-    /**
-     * Store a new slide.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function saveSlides(Request $request)
     {
-        // Check if request contains an array of slides
         $slides = $request->all();
     
         foreach ($slides as $slide) {
-            // Validate each slide
             $validated = Validator::make($slide, [
                 'imageLink' => 'required|string',
-                'description' => 'required|string',
+                'description' => 'nullable|string',
                 'textColor' => 'required|string',
                 'bgColor' => 'required|string',
-                'textPosition' => 'required|string',
+                'textPosition' => 'string',
                 'startDate' => 'required|date',
                 'endDate' => 'required|date',
                 'selectedScreens' => 'required|array',
@@ -37,43 +29,45 @@ class SlideController extends Controller
                 return response()->json(['error' => $validated->errors()], 422);
             }
     
-            // Create slide in the database
-            Slide::create($validated->validated());
+            try {
+                $validatedData = $validated->validated();
+                Slide::create($validatedData);
+            } catch (\Exception $e) {
+                \Log::error('Slide creation failed: '.$e->getMessage());
+                return response()->json(['error' => $e], 500);
+            }
         }
     
-        return response()->json(['message' => 'Slides created successfully']);
+        return response()->json(['message' => 'Slides created successfully'], 201);
     }
-
-    /**
-     * Get all slides.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    
     public function getAllSlides()
     {
-        // Get all slides from the database
         $slides = Slide::all();
 
-        // Return the slides as a JSON response
         return response()->json($slides);
     }
 
-    /**
-     * Get today's slides.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function getTodaysSlides()
     {
-        // Get the current date using Carbon
-        $today = Carbon::today();
+        $today = Carbon::now()->setTimezone('Europe/Riga');
 
-        // Fetch slides where today's date is between startDate and endDate
         $slides = Slide::where('startDate', '<=', $today)
                         ->where('endDate', '>=', $today)
                         ->get();
 
-        // Return today's slides as a JSON response
+        return response()->json($slides);
+    }
+
+    public function getSlidesByScreen($screenID)
+    {
+        $today = Carbon::now()->setTimezone('Europe/Riga');
+
+        $slides = Slide::whereJsonContains('selectedScreens', $screenID)
+            ->where('startDate', '<=', $today)
+            ->where('endDate', '>=', $today)
+            ->get();
+
         return response()->json($slides);
     }
 }
