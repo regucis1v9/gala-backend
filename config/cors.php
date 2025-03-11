@@ -12,7 +12,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['https://gala-frontend.vercel.app'], // Specify your frontend origin
+    'allowed_origins' => ['https://gala-frontend.vercel.app', 'localhost:3000'], // Specify your frontend origin
 
     'allowed_origins_patterns' => [],
 
